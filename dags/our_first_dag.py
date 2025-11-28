@@ -9,7 +9,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id="our_first_dag_v3",
+    dag_id="our_first_dag_v4",
     default_args=default_args,
     description="This is our first DAG that we write",
     start_date=datetime(2025, 11, 26, 8),
@@ -30,5 +30,12 @@ with DAG(
         bash_command="echo hey, I am task3 and will be running after task1 and at the same time as task2!",
     )
     
-    task1.set_downstream(task2)
-    task1.set_downstream(task3)
+    # Task dependency method 1
+    # task1.set_downstream(task2)
+    # task1.set_downstream(task3)
+    
+    # Task dependency method 2
+    task1 >> task2
+    task1 >> task3
+    
+    
