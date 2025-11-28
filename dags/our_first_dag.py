@@ -40,5 +40,3 @@ with DAG(
     
     # Task dependency method 3
     task1 >> [task2, task3]
-    
-    
