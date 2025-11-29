@@ -9,15 +9,17 @@ default_args = {
 }
 
 def greet(age, ti):
-    name = ti.xcom_pull(task_ids='get_name')
-    print(f"Hello World! My name is {name} and I am {age} years old.")
+    first_name = ti.xcom_pull(task_ids='get_name', key='first_name')
+    last_name = ti.xcom_pull(task_ids='get_name', key='last_name')
+    print(f"Hello World! My name is {first_name} {last_name} and I am {age} years old.")
     
-def get_name():
-    return 'Luis'
+def get_name(ti):
+    ti.xcom_push(key='first_name', value="Manuel Luis")
+    ti.xcom_push(key='last_name', value="de los Reyes")
 
 with DAG(
     default_args = default_args,
-    dag_id = 'our_first_dag_with_python_operator_v04',
+    dag_id = 'our_first_dag_with_python_operator_v05',
     description = 'Our first DAG using python operator',
     start_date = datetime(2025, 11, 28),
     schedule_interval = '@daily' 
@@ -25,7 +27,7 @@ with DAG(
     task1 = PythonOperator(
         task_id = 'greet',
         python_callable = greet,
-        op_kwargs = {'name': 'Luis', 'age': 24}
+        op_kwargs = {'age': 24}
     )
     
     task2 = PythonOperator(
