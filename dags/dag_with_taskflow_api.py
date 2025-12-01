@@ -13,7 +13,7 @@ default_args = {
      schedule_interval='@daily')
 def hello_world_etl():
     
-    @task(multiple_outputs=True)
+    @task()
     def get_name():
         return 'Luis'
     
