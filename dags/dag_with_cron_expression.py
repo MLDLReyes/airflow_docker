@@ -11,9 +11,9 @@ default_args = {
 
 with DAG(
     default_args=default_args,
-    dag_id='dag_with_cron_expression_v01',
+    dag_id='dag_with_cron_expression_v02',
     start_date=datetime(2025, 11, 30),
-    schedule_interval='@daily'
+    schedule_interval='0 0 * * *'
 ) as dag:
     task1 = BashOperator(
         task_id='task1',
