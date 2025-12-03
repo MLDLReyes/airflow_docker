@@ -11,9 +11,9 @@ default_args = {
 
 with DAG(
     default_args=default_args,
-    dag_id='dag_with_cron_expression_v03',
+    dag_id='dag_with_cron_expression_v04',
     start_date=datetime(2025, 11, 1),
-    schedule_interval='0 8 * * Wed' #crontab.guru
+    schedule_interval='0 8 * * Tue-Fri' #crontab.guru
 ) as dag:
     task1 = BashOperator(
         task_id='task1',
