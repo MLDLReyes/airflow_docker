@@ -10,7 +10,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id='dag_with_postgres_operator_v01',
+    dag_id='dag_with_postgres_operator_v02',
     default_args=default_args,
     start_date=datetime(2025, 12, 6),
     schedule_interval='0 0 * * *',
@@ -26,4 +26,11 @@ with DAG(
             )
         """
     )
-    task1
+    task2 = PostgresOperator(
+        task_id='insert_into_table',
+        postgres_conn_id='postgres_localhost',
+        sql="""
+            insert into dag_runs (dt, dag_id) values ('{{ ds }}', '{{ dag.dag_id }}')
+        """
+    )
+    task1 >> task2
