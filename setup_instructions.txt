@@ -1,5 +1,6 @@
 Download the following file: airflow.apache.org/docs/apache-airflow/2.5.1/docker-compose.yaml
 
+
 Open Visual Studio Code create a new file .env and add the following :
 
 AIRFLOW_IMAGE_NAME=apache/airflow:2.4.2
@@ -9,11 +10,13 @@ Add the following command in the terminal:
 
 docker-compose up -d
 
+
 Create Admin user using below command:
 
 docker-compose run airflow-worker airflow users create --role Admin --username admin --email admin --firstname admin --lastname admin --password admin
 
 Open in browser: http://localhost:8080/
+
 
 To remove example DAGs:
 
@@ -24,3 +27,14 @@ then in run terminal:
 docker-compose up airflow-init
 
 docker-compose up -d
+
+
+To re-build docker with requirements.txt and Dockerfile:
+
+run in terminal:
+
+docker build . --tag extending_airflow:latest
+
+to rebuild webserver:
+
+docker-compose up -d --no-deps --build airflow-webserver airflow-scheduler
