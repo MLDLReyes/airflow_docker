@@ -11,7 +11,7 @@ default_args = {
 
 with DAG(
     default_args=default_args,
-    dag_id='dag_with_minio_s3',
+    dag_id='dag_with_minio_s3_v01',
     start_date=datetime(2025, 12, 19),
     schedule_interval='@daily'
 ) as dag:
