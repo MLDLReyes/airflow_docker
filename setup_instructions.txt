@@ -38,3 +38,13 @@ docker build . --tag extending_airflow:latest
 to rebuild webserver:
 
 docker-compose up -d --no-deps --build airflow-webserver airflow-scheduler
+
+
+minio set-up:
+
+docker run -d --name minio -p 9000:9000 -p 9001:9001 -e MINIO_ROOT_USER=admin -e MINIO_ROOT_PASSWORD=strongpassword minio/minio server /data --console-address ":9001"
+
+
+minio_conn Extra:
+
+{"aws_access_key_id": "admin", "aws_secret_access_key": "strongpassword", "region_name": "us-east-1", "endpoint_url": "http://host.docker.internal:9000"}
