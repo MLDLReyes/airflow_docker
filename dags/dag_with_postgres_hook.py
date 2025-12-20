@@ -11,15 +11,16 @@ default_args = {
     'retry_delay': timedelta(minutes=10)
 }
 
-def postgres_to_s3():
+def postgres_to_s3(ds_nodash, next_ds_nodash):
     pass
     # Step 1: query data from postgresql db and save it into text file
     hook = PostgresHook(postgres_conn_id='postgres_localhost')
     conn = hook.get_conn()
     cursor = conn.cursor()
-    cursor.execute("select * from orders where date <= '20220501'")
+    cursor.execute("select * from orders where date >= %s and date < %s", 
+                   (ds_nodash, next_ds_nodash))
     
-    with open("dags/get_orders.txt", "w") as f:
+    with open(f"dags/get_orders_{ds_nodash}.txt", "w") as f:
         csv_writer = csv.writer(f)
         csv_writer.writerow([i[0] for i in cursor.description])
         csv_writer.writerows(cursor)
@@ -27,18 +28,18 @@ def postgres_to_s3():
     cursor.close()
     conn.close()
     
-    logging.info("Saved orders data in text file get_orders.txt")
+    logging.info("Saved orders data in text file: %s", f"dags/get_orders_{ds_nodash}.txt")
     
     # Step 2: upload the text file to S3
 
 with DAG(
-    dag_id='dag_with_postgres_hook_v01',
+    dag_id='dag_with_postgres_hook_v02',
     default_args=default_args,
     schedule_interval='@daily',
-    start_date=datetime(2025, 12, 20)
+    start_date=datetime(2022, 4, 30)
 ) as dag:
     task1 = PythonOperator(
-        task_id='postgres_to_s3',
+        task_id="postgres_to_s3",
         python_callable=postgres_to_s3
     )
     task1
