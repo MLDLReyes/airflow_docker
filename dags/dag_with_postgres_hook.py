@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
+from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
 default_args = {
     'owner': 'luis',
@@ -17,8 +18,9 @@ def postgres_to_s3(ds_nodash, next_ds_nodash):
     hook = PostgresHook(postgres_conn_id='postgres_localhost')
     conn = hook.get_conn()
     cursor = conn.cursor()
-    cursor.execute("select * from orders where date >= %s and date < %s", 
-                   (ds_nodash, next_ds_nodash))
+    # cursor.execute("select * from orders where date >= %s and date < %s", 
+    #                (ds_nodash, next_ds_nodash))
+    cursor.execute("SELECT * FROM orders WHERE date = %s", (ds_nodash,))
     
     with open(f"dags/get_orders_{ds_nodash}.txt", "w") as f:
         csv_writer = csv.writer(f)
@@ -31,12 +33,21 @@ def postgres_to_s3(ds_nodash, next_ds_nodash):
     logging.info("Saved orders data in text file: %s", f"dags/get_orders_{ds_nodash}.txt")
     
     # Step 2: upload the text file to S3
+    s3_hook = S3Hook(aws_conn_id='minio_conn')
+    s3_hook.load_file(
+        filename=f.name,
+        key=f"orders/{ds_nodash}.txt",
+        bucket_name="airflow",
+        replace=True
+    )
+    logging.info("Orders file %s has been pushed to S3!", f.name)
+
 
 with DAG(
-    dag_id='dag_with_postgres_hook_v02',
+    dag_id='dag_with_postgres_hook_v03',
     default_args=default_args,
     schedule_interval='@daily',
-    start_date=datetime(2022, 4, 30)
+    start_date=datetime(2025, 12, 20)
 ) as dag:
     task1 = PythonOperator(
         task_id="postgres_to_s3",
